@@ -206,11 +206,24 @@ search_payments_ok_test(Config) ->
     Query1 = [{payerIP, <<"192.168.0.1">>} | Params],
     Query2 = [{payerIP, <<"992.168.0.1">>} | Params],
     {ok, _, _} = anapi_client_searches:search_payments(?config(context, Config), Query1),
-    {error,
-        {400, #{
-            <<"code">> := <<"invalidRequest">>,
-            <<"message">> := <<"Request parameter: payerIP, error type: wrong_format">>
-        }}} = anapi_client_searches:search_payments(?config(context, Config), Query2).
+    {ok, 400, #{
+        <<"code">> := <<"invalidRequest">>,
+        <<"message">> := <<"Request parameter: payerIP, error type: wrong_format">>
+    }} = request_search_payments(?config(context, Config), Query2).
+
+request_search_payments(Context, Query) ->
+    % NOTE
+    % Adapted from `anapi_client_searches:search_payments/2`.
+    {Endpoint, #{header := Headers}, Opts} = anapi_client_lib:make_request(Context, #{}),
+    Qs = anapi_client_lib:make_search_query_string(Query),
+    UrlPath = swag_client_utils:get_url(Endpoint, "/lk/v1/payments"),
+    Url = swag_client_utils:fill_url(UrlPath, #{}, Qs),
+    case hackney:request(get, Url, maps:to_list(Headers), <<>>, [with_body] ++ Opts) of
+        {ok, Status, _, Response} ->
+            {ok, Status, jsx:decode(Response, [return_maps])};
+        {error, _} = Error ->
+            Error
+    end.
 
 -spec search_refunds_ok_test(config()) -> _.
 search_refunds_ok_test(Config) ->
