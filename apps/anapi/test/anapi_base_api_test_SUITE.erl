@@ -17,10 +17,6 @@
 -module(anapi_base_api_test_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
--include_lib("stdlib/include/assert.hrl").
-
--include_lib("damsel/include/dmsl_merch_stat_thrift.hrl").
--include_lib("reporter_proto/include/reporter_reports_thrift.hrl").
 -include_lib("anapi_dummy_data.hrl").
 -include_lib("anapi_bouncer_data.hrl").
 
@@ -51,12 +47,6 @@
     download_report_file_ok_test/1,
     search_by_inaccessible_party_id_error_test/1
 ]).
-
--define(ANAPI_PORT, 8080).
--define(ANAPI_HOST_NAME, "localhost").
--define(ANAPI_URL, ?ANAPI_HOST_NAME ++ ":" ++ integer_to_list(?ANAPI_PORT)).
-
--define(badresp(Code), {error, {invalid_response_code, Code}}).
 
 -type test_case_name() :: atom().
 -type config() :: [{atom(), any()}].
@@ -471,14 +461,7 @@ search_by_inaccessible_party_id_error_test(Config) ->
         {from_time, {{2015, 08, 11}, {19, 42, 35}}},
         {to_time, {{2020, 08, 11}, {19, 42, 35}}},
         {partyID, <<"Totaly not the users party">>},
-        {paymentInstitutionRealm, <<"live">>},
-        {invoiceID, <<"testInvoiceID">>},
-        {paymentID, <<"testPaymentID">>},
-        {chargebackID, <<"testChargebackID">>},
-        {chargebackStatuses, <<"pending,accepted">>},
-        {chargebackStages, <<"chargeback,pre_arbitration">>},
-        {chargebackCategories, <<"fraud,dispute">>},
-        {continuationToken, <<"come_back_next_time">>}
+        {paymentInstitutionRealm, <<"live">>}
     ],
     {error, {401, _}} =
         anapi_client_searches:search_chargebacks(?config(context, Config), Query).

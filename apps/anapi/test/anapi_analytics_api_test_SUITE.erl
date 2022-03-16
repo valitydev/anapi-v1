@@ -17,10 +17,6 @@
 -module(anapi_analytics_api_test_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
--include_lib("stdlib/include/assert.hrl").
-
--include_lib("damsel/include/dmsl_merch_stat_thrift.hrl").
--include_lib("reporter_proto/include/reporter_reports_thrift.hrl").
 -include_lib("anapi_dummy_data.hrl").
 
 -export([all/0]).
@@ -49,12 +45,6 @@
 
     analytics_timeout_test/1
 ]).
-
--define(ANAPI_PORT, 8080).
--define(ANAPI_HOST_NAME, "localhost").
--define(ANAPI_URL, ?ANAPI_HOST_NAME ++ ":" ++ integer_to_list(?ANAPI_PORT)).
-
--define(badresp(Code), {error, {invalid_response_code, Code}}).
 
 -type test_case_name() :: atom().
 -type config() :: [{atom(), any()}].
@@ -131,6 +121,18 @@ end_per_testcase(_Name, C) ->
 
 %%% Tests
 
+-define(STAT_QUERY, [
+    {partyID, ?STRING},
+    {shopIDs, <<"asdf,asdf2">>},
+    {excludeShopIDs, <<"asdf3">>},
+    {from_time, {{2015, 08, 11}, {19, 42, 35}}},
+    {to_time, {{2020, 08, 11}, {19, 42, 35}}}
+]).
+
+-define(STAT_QUERY_SPLIT,
+    ?STAT_QUERY ++ [{split_unit, ?SPLIT_UNIT}]
+).
+
 -spec get_payments_tool_distribution_ok_test(config()) -> _.
 get_payments_tool_distribution_ok_test(Config) ->
     _ = anapi_ct_helper:mock_services(
@@ -141,15 +143,7 @@ get_payments_tool_distribution_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsToolDistribution">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_tool_distribution(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_tool_distribution(?config(context, Config), ?STAT_QUERY).
 
 -spec get_payments_amount_ok_test(config()) -> _.
 get_payments_amount_ok_test(Config) ->
@@ -161,15 +155,7 @@ get_payments_amount_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsAmount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_amount(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_amount(?config(context, Config), ?STAT_QUERY).
 
 -spec get_average_payment_ok_test(config()) -> _.
 get_average_payment_ok_test(Config) ->
@@ -181,15 +167,7 @@ get_average_payment_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetAveragePayment">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_average_payment(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_average_payment(?config(context, Config), ?STAT_QUERY).
 
 -spec get_payments_count_ok_test(config()) -> _.
 get_payments_count_ok_test(Config) ->
@@ -201,15 +179,7 @@ get_payments_count_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsCount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_count(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_count(?config(context, Config), ?STAT_QUERY).
 
 -spec get_payments_error_distribution_ok_test(config()) -> _.
 get_payments_error_distribution_ok_test(Config) ->
@@ -221,15 +191,7 @@ get_payments_error_distribution_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsErrorDistribution">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_error_distribution(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_error_distribution(?config(context, Config), ?STAT_QUERY).
 
 -spec get_payments_split_amount_ok_test(config()) -> _.
 get_payments_split_amount_ok_test(Config) ->
@@ -241,16 +203,7 @@ get_payments_split_amount_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsSplitAmount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}},
-        {split_unit, ?SPLIT_UNIT}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_split_amount(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_split_amount(?config(context, Config), ?STAT_QUERY_SPLIT).
 
 -spec get_payments_split_count_ok_test(config()) -> _.
 get_payments_split_count_ok_test(Config) ->
@@ -262,16 +215,7 @@ get_payments_split_count_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetPaymentsSplitCount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}},
-        {split_unit, ?SPLIT_UNIT}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_split_count(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_split_count(?config(context, Config), ?STAT_QUERY_SPLIT).
 
 -spec get_refunds_amount_ok_test(config()) -> _.
 get_refunds_amount_ok_test(Config) ->
@@ -283,15 +227,7 @@ get_refunds_amount_ok_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetRefundsAmount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_refunds_amount(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_refunds_amount(?config(context, Config), ?STAT_QUERY).
 
 -spec get_current_balances_ok_test(config()) -> _.
 get_current_balances_ok_test(Config) ->
@@ -325,15 +261,7 @@ get_payments_sub_error_distribution_ok_test(Config) ->
         ?STRING,
         Config
     ),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {ok, _} = anapi_client_analytics:get_payments_sub_error_distribution(?config(context, Config), Query).
+    {ok, _} = anapi_client_analytics:get_payments_sub_error_distribution(?config(context, Config), ?STAT_QUERY).
 
 -spec get_current_balances_group_by_shop_ok_test(config()) -> _.
 get_current_balances_group_by_shop_ok_test(Config) ->
@@ -350,7 +278,6 @@ get_current_balances_group_by_shop_ok_test(Config) ->
         {shopIDs, <<"asdf,asdf2">>},
         {excludeShopIDs, <<"asdf3">>}
     ],
-
     {ok, _} = anapi_client_analytics:get_current_balances_group_by_shop(?config(context, Config), Query).
 
 -spec analytics_timeout_test(config()) -> _.
@@ -366,12 +293,6 @@ analytics_timeout_test(Config) ->
         Config
     ),
     _ = anapi_ct_helper_bouncer:mock_bouncer_assert_party_op_ctx(<<"GetRefundsAmount">>, ?STRING, Config),
-    Query = [
-        {partyID, ?STRING},
-        {shopIDs, <<"asdf,asdf2">>},
-        {excludeShopIDs, <<"asdf3">>},
-        {from_time, {{2015, 08, 11}, {19, 42, 35}}},
-        {to_time, {{2020, 08, 11}, {19, 42, 35}}}
-    ],
-
-    {error, {invalid_response_code, 504}} = anapi_client_analytics:get_refunds_amount(?config(context, Config), Query).
+    {error, {invalid_response_code, 504}} = anapi_client_analytics:get_refunds_amount(
+        ?config(context, Config), ?STAT_QUERY
+    ).
