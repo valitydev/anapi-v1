@@ -152,7 +152,7 @@
 
 -define(INSTANT_INVOICE_PAYMENT_FLOW, {instant, #merchstat_InvoicePaymentFlowInstant{}}).
 
--define(LOCATION_INFO, #geo_ip_LocationInfo{
+-define(LOCATION_INFO, #columbus_LocationInfo{
     city_geo_id = ?INTEGER,
     country_geo_id = ?INTEGER,
     raw_response = ?STRING
