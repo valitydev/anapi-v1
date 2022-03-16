@@ -17,7 +17,6 @@ erl_crash.dump
 # containerization
 \#*
 .\#*
-Dockerfile
-docker-compose.yml
 
 tags
+Makefile.env
