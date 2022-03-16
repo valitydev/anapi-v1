@@ -126,9 +126,9 @@ maybe_entity(Name, Params) ->
     maybe_with(Name, Params, fun build_entity/1).
 
 build_entity(ID) when is_binary(ID) ->
-    #bctx_v1_Entity{id = ID};
+    #bouncer_base_Entity{id = ID};
 build_entity(ID) when is_integer(ID) ->
-    #bctx_v1_Entity{id = integer_to_binary(ID)}.
+    #bouncer_base_Entity{id = integer_to_binary(ID)}.
 
 build_set(L) when is_list(L) ->
     ordsets:from_list(L).

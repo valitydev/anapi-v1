@@ -9,7 +9,7 @@
 -define(FORBIDDEN, {forbidden, #bdcs_ResolutionForbidden{}}).
 -define(RESTRICTED(Restrictions), {forbidden, #bdcs_ResolutionRestricted{restrictions = Restrictions}}).
 
--define(CTX_ENTITY(ID), #bctx_v1_Entity{id = ID}).
+-define(CTX_ENTITY(ID), #bouncer_base_Entity{id = ID}).
 
 -define(CTX_ANAPI(Op), #bctx_v1_ContextAnalyticsAPI{op = Op}).
 

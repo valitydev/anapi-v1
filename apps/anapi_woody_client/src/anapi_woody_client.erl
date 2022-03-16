@@ -89,7 +89,7 @@ get_service_modname(reporting) ->
 get_service_modname(analytics) ->
     {analytics_proto_analytics_thrift, 'AnalyticsService'};
 get_service_modname(party_shop) ->
-    {party_shop_proto_party_shop_thrift, 'PartyShopService'}.
+    {party_shop_thrift, 'VortigonService'}.
 
 get_service_deadline(ServiceName) ->
     ServiceDeadlines = genlib_app:env(?MODULE, service_deadlines, #{}),

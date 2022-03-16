@@ -15,4 +15,4 @@ get_restricted_shop_ids(Restrictions) ->
             }
         }
     } = Restrictions,
-    [ID || #bctx_v1_Entity{id = ID} <- ordsets:to_list(ShopEntities)].
+    [ID || #bouncer_base_Entity{id = ID} <- ordsets:to_list(ShopEntities)].
