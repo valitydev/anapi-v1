@@ -377,12 +377,9 @@ decode_bank_card(#merchstat_BankCard{
         })
     ).
 
-decode_payment_terminal(#merchstat_PaymentTerminal{
-    terminal_type = Type
-}) ->
+decode_payment_terminal(#merchstat_PaymentTerminal{}) ->
     anapi_utils:map_to_base64url(#{
-        <<"type">> => <<"payment_terminal">>,
-        <<"terminal_type">> => Type
+        <<"type">> => <<"payment_terminal">>
     }).
 
 decode_digital_wallet(#merchstat_DigitalWallet{
@@ -492,9 +489,9 @@ decode_token_provider(Provider) when Provider /= undefined ->
 decode_token_provider(undefined) ->
     undefined.
 
-decode_payment_terminal_details(#merchstat_PaymentTerminal{terminal_type = Type}, V) ->
+decode_payment_terminal_details(#merchstat_PaymentTerminal{payment_service = Provider}, V) when Provider /= undefined ->
     V#{
-        <<"provider">> => genlib:to_binary(Type)
+        <<"provider">> => Provider#domain_PaymentServiceRef.id
     }.
 
 decode_digital_wallet_details(#merchstat_DigitalWallet{provider = qiwi, id = ID}, V) ->
@@ -506,7 +503,7 @@ decode_digital_wallet_details(#merchstat_DigitalWallet{provider = qiwi, id = ID}
 mask_phone_number(PhoneNumber) ->
     genlib_string:redact(PhoneNumber, <<"^\\+\\d(\\d{1,10}?)\\d{2,4}$">>).
 
-decode_geo_location_info(#geo_ip_LocationInfo{city_geo_id = CityID, country_geo_id = CountryID}) ->
+decode_geo_location_info(#columbus_LocationInfo{city_geo_id = CityID, country_geo_id = CountryID}) ->
     #{
         <<"cityGeoID">> => CityID,
         <<"countryGeoID">> => CountryID

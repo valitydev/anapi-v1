@@ -1,4 +1,0 @@
-[submodule "schemes/swag"]
-	path = schemes/swag
-	url = git@github.com:rbkmoney/swag-analytics.git
-	branch = release/master

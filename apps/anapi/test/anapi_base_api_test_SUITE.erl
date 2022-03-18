@@ -17,10 +17,6 @@
 -module(anapi_base_api_test_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
--include_lib("stdlib/include/assert.hrl").
-
--include_lib("damsel/include/dmsl_merch_stat_thrift.hrl").
--include_lib("reporter_proto/include/reporter_reports_thrift.hrl").
 -include_lib("anapi_dummy_data.hrl").
 -include_lib("anapi_bouncer_data.hrl").
 
@@ -51,12 +47,6 @@
     download_report_file_ok_test/1,
     search_by_inaccessible_party_id_error_test/1
 ]).
-
--define(ANAPI_PORT, 8080).
--define(ANAPI_HOST_NAME, "localhost").
--define(ANAPI_URL, ?ANAPI_HOST_NAME ++ ":" ++ integer_to_list(?ANAPI_PORT)).
-
--define(badresp(Code), {error, {invalid_response_code, Code}}).
 
 -type test_case_name() :: atom().
 -type config() :: [{atom(), any()}].
@@ -206,11 +196,24 @@ search_payments_ok_test(Config) ->
     Query1 = [{payerIP, <<"192.168.0.1">>} | Params],
     Query2 = [{payerIP, <<"992.168.0.1">>} | Params],
     {ok, _, _} = anapi_client_searches:search_payments(?config(context, Config), Query1),
-    {error,
-        {400, #{
-            <<"code">> := <<"invalidRequest">>,
-            <<"message">> := <<"Request parameter: payerIP, error type: wrong_format">>
-        }}} = anapi_client_searches:search_payments(?config(context, Config), Query2).
+    {ok, 400, #{
+        <<"code">> := <<"invalidRequest">>,
+        <<"message">> := <<"Request parameter: payerIP, error type: wrong_format">>
+    }} = request_search_payments(?config(context, Config), Query2).
+
+request_search_payments(Context, Query) ->
+    % NOTE
+    % Adapted from `anapi_client_searches:search_payments/2`.
+    {Endpoint, #{header := Headers}, Opts} = anapi_client_lib:make_request(Context, #{}),
+    Qs = anapi_client_lib:make_search_query_string(Query),
+    UrlPath = swag_client_utils:get_url(Endpoint, "/lk/v1/payments"),
+    Url = swag_client_utils:fill_url(UrlPath, #{}, Qs),
+    case hackney:request(get, Url, maps:to_list(Headers), <<>>, [with_body] ++ Opts) of
+        {ok, Status, _, Response} ->
+            {ok, Status, jsx:decode(Response, [return_maps])};
+        {error, _} = Error ->
+            Error
+    end.
 
 -spec search_refunds_ok_test(config()) -> _.
 search_refunds_ok_test(Config) ->
@@ -458,14 +461,7 @@ search_by_inaccessible_party_id_error_test(Config) ->
         {from_time, {{2015, 08, 11}, {19, 42, 35}}},
         {to_time, {{2020, 08, 11}, {19, 42, 35}}},
         {partyID, <<"Totaly not the users party">>},
-        {paymentInstitutionRealm, <<"live">>},
-        {invoiceID, <<"testInvoiceID">>},
-        {paymentID, <<"testPaymentID">>},
-        {chargebackID, <<"testChargebackID">>},
-        {chargebackStatuses, <<"pending,accepted">>},
-        {chargebackStages, <<"chargeback,pre_arbitration">>},
-        {chargebackCategories, <<"fraud,dispute">>},
-        {continuationToken, <<"come_back_next_time">>}
+        {paymentInstitutionRealm, <<"live">>}
     ],
     {error, {401, _}} =
         anapi_client_searches:search_chargebacks(?config(context, Config), Query).

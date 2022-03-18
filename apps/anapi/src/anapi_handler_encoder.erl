@@ -25,10 +25,10 @@
 -export_type([encode_data/0]).
 
 -type encode_data() :: tuple().
--type merchant_filter() :: #analytics_MerchantFilter{}.
--type time_filter() :: #analytics_TimeFilter{}.
--type filter_request() :: #analytics_FilterRequest{}.
--type split_filter_request() :: #analytics_SplitFilterRequest{}.
+-type merchant_filter() :: analytics_proto_analytics_thrift:'MerchantFilter'().
+-type time_filter() :: analytics_proto_analytics_thrift:'TimeFilter'().
+-type filter_request() :: analytics_proto_analytics_thrift:'FilterRequest'().
+-type split_filter_request() :: analytics_proto_analytics_thrift:'SplitFilterRequest'().
 -type analytics_request_type() :: merchant_filter | time_filter | filter_request | split_filter_request.
 
 -spec encode_stat_request(map() | binary(), binary() | undefined) -> encode_data().
