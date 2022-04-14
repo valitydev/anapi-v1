@@ -383,12 +383,12 @@ decode_payment_terminal(#merchstat_PaymentTerminal{}) ->
     }).
 
 decode_digital_wallet(#merchstat_DigitalWallet{
-    provider = Provider,
+    payment_service = Provider,
     id = ID
 }) ->
     anapi_utils:map_to_base64url(#{
         <<"type">> => <<"digital_wallet">>,
-        <<"provider">> => atom_to_binary(Provider, utf8),
+        <<"provider">> => Provider#domain_PaymentServiceRef.id,
         <<"id">> => ID
     }).
 
@@ -489,15 +489,18 @@ decode_token_provider(Provider) when Provider /= undefined ->
 decode_token_provider(undefined) ->
     undefined.
 
-decode_payment_terminal_details(#merchstat_PaymentTerminal{payment_service = Provider}, V) when Provider /= undefined ->
+decode_payment_terminal_details(#merchstat_PaymentTerminal{payment_service = Provider}, V) when
+    Provider /= undefined
+->
     V#{
         <<"provider">> => Provider#domain_PaymentServiceRef.id
     }.
 
-decode_digital_wallet_details(#merchstat_DigitalWallet{provider = qiwi, id = ID}, V) ->
+decode_digital_wallet_details(#merchstat_DigitalWallet{payment_service = Provider}, V) when
+    Provider /= undefined
+->
     V#{
-        <<"digitalWalletDetailsType">> => <<"DigitalWalletDetailsQIWI">>,
-        <<"phoneNumberMask">> => mask_phone_number(ID)
+        <<"provider">> => Provider#domain_PaymentServiceRef.id
     }.
 
 mask_phone_number(PhoneNumber) ->

@@ -91,7 +91,8 @@
         {payments, [
             ?STAT_PAYMENT(?STAT_PAYER({bank_card, ?STAT_BANK_CARD}), ?STAT_PAYMENT_STATUS_CAPTURED),
             ?STAT_PAYMENT(?STAT_PAYER({bank_card, ?STAT_BANK_CARD_WITH_TP}), ?STAT_PAYMENT_STATUS_PENDING),
-            ?STAT_PAYMENT(?STAT_PAYER({bank_card, ?STAT_BANK_CARD}, undefined), ?STAT_PAYMENT_STATUS_CAPTURED)
+            ?STAT_PAYMENT(?STAT_PAYER({bank_card, ?STAT_BANK_CARD}, undefined), ?STAT_PAYMENT_STATUS_CAPTURED),
+            ?STAT_PAYMENT(?STAT_PAYER({digital_wallet, ?STAT_DIGITAL_WALLET}, undefined), ?STAT_PAYMENT_STATUS_CAPTURED)
         ]}
     )
 ).
@@ -252,6 +253,11 @@
     bin = <<"411111">>,
     masked_pan = <<"411111******1111">>,
     token_provider_deprecated = applepay
+}).
+
+-define(STAT_DIGITAL_WALLET, #merchstat_DigitalWallet{
+    payment_service = #domain_PaymentServiceRef{id = ?STRING},
+    id = ?MD5
 }).
 
 -define(STAT_CHARGEBACK, #merchstat_StatChargeback{

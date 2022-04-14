@@ -33,7 +33,7 @@
  {<<"cowlib">>,{pkg,<<"cowlib">>,<<"2.8.0">>},1},
  {<<"damsel">>,
   {git,"https://github.com/valitydev/damsel.git",
-       {ref,"318a7a6588c4813bd7d5c170af58fa9b6a80e401"}},
+       {ref,"1d60b20f2136938c43902dd38a80ae70f03e4a14"}},
   0},
  {<<"email_validator">>,{pkg,<<"email_validator">>,<<"1.1.0">>},0},
  {<<"erl_health">>,
