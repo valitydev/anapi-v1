@@ -2769,31 +2769,20 @@ get_raw() ->
       }
     },
     <<"DigitalWalletDetails">> => #{
-      <<"required">> => [ <<"digitalWalletDetailsType">> ],
-      <<"discriminator">> => <<"digitalWalletDetailsType">>,
+      <<"type">> => <<"object">>,
+      <<"required">> => [ <<"provider">> ],
       <<"properties">> => #{
-        <<"digitalWalletDetailsType">> => #{
-          <<"type">> => <<"string">>,
-          <<"enum">> => [ <<"DigitalWalletDetailsQIWI">> ]
+        <<"provider">> => #{
+          <<"x-rebillyMerge">> => [ #{
+            <<"$ref">> => <<"#/definitions/DigitalWalletProvider">>
+          } ]
         }
-      },
-      <<"x-discriminator-is-enum">> => true
+      }
     },
-    <<"DigitalWalletDetailsQIWI">> => #{
-      <<"allOf">> => [ #{
-        <<"$ref">> => <<"#/definitions/DigitalWalletDetails">>
-      }, #{
-        <<"type">> => <<"object">>,
-        <<"required">> => [ <<"phoneNumberMask">> ],
-        <<"properties">> => #{
-          <<"phoneNumberMask">> => #{
-            <<"type">> => <<"string">>,
-            <<"example">> => <<"+7******3210">>,
-            <<"description">> => <<"Маскированный номер телефона плательщика в международном формате, выступающий\nв роли идентификатора кошелька Visa QIWI Wallet.\n">>,
-            <<"pattern">> => <<"^\\+\\d\\*{1,10}\\d{2,4}$">>
-          }
-        }
-      } ]
+    <<"DigitalWalletProvider">> => #{
+      <<"type">> => <<"string">>,
+      <<"description">> => <<"Провайдер электронных денежных средств.\n\nДополнительные детали провайдера можно узнать, вызвав [справочную операцию](#operation/getServiceProviderByID).\n">>,
+      <<"example">> => <<"qiwi">>
     },
     <<"ExternalID">> => #{
       <<"type">> => <<"string">>,
